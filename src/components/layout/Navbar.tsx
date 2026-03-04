@@ -9,10 +9,10 @@ export default function Navbar() {
         </Link>
       </div>
       <div className="flex gap-6 md:gap-12 text-[#4A5D1D] font-medium text-lg">
-        <Link href="#" className="hover:opacity-70 transition-opacity">
+        <Link href="/about" className="hover:opacity-70 transition-opacity">
           about me
         </Link>
-        <Link href="#" className="hover:opacity-70 transition-opacity">
+        <Link href="/blogs" className="hover:opacity-70 transition-opacity">
           blogs
         </Link>
         <Link href="#" className="hover:opacity-70 transition-opacity">
