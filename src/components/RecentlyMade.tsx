@@ -61,7 +61,7 @@ export default function RecentlyMade() {
   return (
     <section className="relative mx-auto w-full max-w-[1040px] px-6 py-10">
       <div className="mb-6 border-t border-black/10 pt-6">
-        <h2 className="text-[20px] font-medium text-[#3e3e42]">Recently Made ▶</h2>
+        <h2 className="text-[20px] font-medium text-[#3e3e42]">Portfolio ▶</h2>
       </div>
 
       <div className="flex flex-col gap-3">
@@ -90,7 +90,7 @@ export default function RecentlyMade() {
             style={{ clipPath: "polygon(0 0, 100% 0, 0 100%)" }}
           />
           <div className="rounded-full bg-[#ff6a3d] px-5 py-2 text-[15px] font-semibold text-white shadow-md">
-            Jackie
+            Anh
           </div>
         </div>
       </div>

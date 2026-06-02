@@ -22,7 +22,7 @@ const historiaSkyScript = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Jackie Hu — Designer",
+  title: "Anh (Talia) Nguyen — Influencer Partnership Specialist",
   description:
     "A thoughtful process of crafting experiences that engage people, shape clarity, and spark delights.",
   icons: {

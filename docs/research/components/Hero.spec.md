@@ -1,68 +1,73 @@
-# Hero Specification (Round 2 — corrected anchoring)
+# Hero Specification (Round 3 — 3-mode animation + object hover)
 
 ## Overview
 - **Target file:** `src/components/Hero.tsx`
-- **Screenshot:** `docs/design-references/r2-original-hero.png`
-- **Interaction model:** static collage + soft-bounce scroll chevron. Hover lift on tool icons.
+- **Screenshots:** `docs/design-references/r3-mode-{brush(clean),pencil(notebook)}.png`, `r3-original-hero-load.png` (chaos)
+- **Interaction model:** click-driven mode switch (3 tool-icon buttons) + per-object hover scale.
 
-## CRITICAL: Responsive model (the round-1 bug)
-The original is **NOT a centered, uniformly-scaled fixed stage**. Verified at viewport
-widths 1200 / 1440 / 1920:
-- **Left-side objects** are anchored to the **left viewport edge** — their center X is
-  constant regardless of width (e.g. film roll `dReV` cx=106 at every width).
-- **Right-side objects** are anchored to the **right viewport edge** — their distance
-  from the right edge is constant (e.g. toolbar right edge = 15px from right at all widths;
-  lamp-cluster `BMk9` center = 274px from right at all widths).
-- **Sizes are fixed pixels**, no scaling on desktop.
-- **Center column** (signature + text + tool icons + chevron) is horizontally centered.
+## Modes & buttons (left→right under the tagline, 48×48, gap 10, centered)
+1. **Note icon → `chaos`** (default on load). Active button bg `#e7e6de`; inactive `#fffaf6`.
+2. **Brush icon → `clean`** (objects de-rotated, spread into a neat grid; text column shifts right).
+3. **Pencil icon → `notebook`** (open-notebook centerpiece; most clutter fades out; airdrop moves to left).
 
-Round 1 rendered a 1200px stage centered + scaled, which at 1440px pushes the whole
-composition ~120px right and pulls the right cluster ~240px in from the edge.
+Clicking a button sets the mode. The active button gets bg `#e7e6de`.
 
-**Implementation:** stage width = `max(1024, viewportWidth)`. For width ≥ 1024, scale = 1
-and right items anchor to the true viewport edge. For width < 1024, scale = `width/1024`
-(uniform shrink of the 1024 design). Left items use `left`, right items use `right`.
+## Stage / responsive model
+Fixed **1440×900** design stage, horizontally centered. `scale = min(1, viewportWidth/1440)`,
+`transform-origin: top center`. Outer height = `900 * scale`. All coords below are top-left (x,y),
+size (w,h), rotation (deg), opacity — in the 1440 stage coordinate system. (This replaces round-2's
+edge-anchor model because objects flip sides between modes, which edge-anchoring can't transition.)
 
-## Geometry (measured @1440, px; cy is from top of hero)
+## Transition timing (measured)
+- **Mode switch:** position/size/rotation animate ~0.4s, monotonic ease-out.
+  Use `transition: left/top/width/height/transform .5s cubic-bezier(.22,.61,.36,1); opacity .4s ease`.
+- **Hover:** object scales to **1.1×** (pure uniform scale, composed on top of base rotation),
+  spring with tiny overshoot, settles ~250ms. Use inner element `transition: transform .28s cubic-bezier(.34,1.56,.64,1)`.
+  On hover also `z-index:50` so the scaled object isn't clipped. No z change in original but improves feel.
 
-### Left collage (anchor: left = cx − w/2, top = cy − h/2, rotate a°)
-| src (.png) | cx | cy | w | h | a |
-|---|---|---|---|---|---|
-| jdLgBfSLwKTClxqYuahwosnQ0ao | 138 | 179 | 343 | 457 | 0 |
-| Ib2MgBDUnLnhAsZEGDsaXTRCyEc | -43 | 267 | 246 | 344 | 0 |
-| UYw9YXInfHuvyVQzhOZZzoZBPh4 | 249 | 235 | 159 | 124 | -12 |
-| AgBD7j2uv82zRz8yWkU2JJqXUU | 20 | 372 | 196 | 196 | -47 |
-| EXDOfJMplEjncYGaW1AXyHUrGo | 142 | 532 | 627 | 504 | -26 |
-| rksKjHdY89q3Pqx7B0oMmuDZYAo | 257 | 457 | 96 | 152 | -26 |
-| dReV0XQhJYgPVKg5SFc8B4qk | 106 | 526 | 180 | 176 | 13 |
-| tQZK8bAxzmm6UcxN8lrkuLrsPTs | 291 | 304 | 59 | 201 | 3 |
-| r0cKKLDepuyC861bflopOCb3QvM | 283 | 672 | 193 | 263 | -14 |
-| 2q82sqseGi8szDiOuBWqQaBz5k | 59 | 699 | 96 | 95 | -16 |
+## Image objects — per-mode [x, y, w, h, rot, opacity]
+| id (png) | chaos | clean | notebook |
+|---|---|---|---|
+| lamp `jdLgBfSLwKTClxqYuahwosnQ0ao` | -34,-50,343,457,0,1 | -21,-10,239,319,0,1 | 539,176,240,320,0,1 |
+| dolipane `Ib2MgBDUnLnhAsZEGDsaXTRCyEc` | -166,95,246,344,0,1 | 50,415,105,147,0,1 | 365,371,105,147,0,1 |
+| dreams-news `UYw9YXInfHuvyVQzhOZZzoZBPh4` | 158,158,181,155,-12,1 | 317,55,103,80,0,1 | 309,131,167,144,14,1 |
+| open-notebook `EXDOfJMplEjncYGaW1AXyHUrGo` | -251,168,785,728,-26,1 | -181,338,551,449,2,1 | 337,7,766,695,-21,1 |
+| coffee-ring `AgBD7j2uv82zRz8yWkU2JJqXUU` | -102,250,244,245,-47,1 | 76,489,247,247,-20,1 | 1011,333,277,277,-46,1 |
+| blue-tube `r0cKKLDepuyC861bflopOCb3QvM` | 158,521,251,302,-14,1 | 275,322,337,359,-33,1 | 275,322,337,359,-33,**0** |
+| pen `tQZK8bAxzmm6UcxN8lrkuLrsPTs` | 256,202,69,204,3,1 | 1096,70,68,230,0,1 | 989,57,101,261,6,1 |
+| film-roll `dReV0XQhJYgPVKg5SFc8B4qk` | -2,420,215,212,13,1 | 175,190,138,135,0,1 | 175,190,138,135,0,**0** |
+| lighter `rksKjHdY89q3Pqx7B0oMmuDZYAo` | 181,368,153,178,-26,1 | 320,190,84,133,0,1 | 320,190,84,133,0,**0** |
+| sticker `2q82sqseGi8szDiOuBWqQaBz5k` | 0,640,119,118,-16,1 | 186,49,96,95,0,1 | 186,49,96,95,0,**0** |
+| mac-toolbar `w5rRTcZlyNjchgev3qGcQcEdA4` | 1330,339,95,341,0,1 | 1225,74,63,226,0,1 | 1225,74,63,226,0,**0** |
+| cursor `BMk9tbBUQoj1TbGSpyuzVtpEI` | 1110,52,110,110,-14,1 | 1300,114,110,110,-14,1 | 1300,114,110,110,-14,**0** |
 
-### Right collage (anchor: right = fromRightCenter − w/2, top = cy − h/2)
-| src | fromRightCenter | cy | w | h | a | note |
-|---|---|---|---|---|---|---|
-| w5rRTcZlyNjchgev3qGcQcEdA4 | 62 | 510 | 95 | 341 | 0 | Mac toolbar grid |
-| BMk9tbBUQoj1TbGSpyuzVtpEI | 274 | 107 | 91 | 91 | -14 | pink pixel cursor (was an SVG in r1) |
+Objects with opacity 0 in a mode keep their previous box (so they fade/shrink in place) and get `pointer-events:none`.
 
-### Right cards (anchor by right edge)
-- **Vinyl card** — right edge ≈ 35px from viewport right, top ≈ 16, width ~150. White rounded
-  card, overflow-hidden record `pIJQ…png` (black disc, red label), then `Souleance` (9px IBM
-  Plex Mono #8a8a8a) / `Jazz et thé vert` (12px IBM Plex Mono #69645e) / progress bar + `1:10 / 3:32`.
-- **Folder** — `zBTr…png` ~130px, center 243px from right, top ≈ 275, rotate -6°, label
-  `...al_Final_Final` 13px black.
-- **AirDrop card** — 188×196, right edge 138px from right, top 440, radius 8px, bg #f6f6f6.
-  Title `AirDrop` (10px SF Pro semibold, black), subtitle `Jackie would like to share a photo`
-  (8px), **image area is an orange→red grainy gradient** (QVQe asset is blank — recreate with CSS),
-  footer `Decline` / `Accept` (10px, #007aff) split by a divider.
+## Composite cards (center-based; size fixed; animate center + rotation + opacity)
+Keep round-2 card visuals (vinyl card incl. `pIJQ` thumbnail; airdrop CSS gradient; folder = `zBTr` img + label).
+| card | chaos center,rot,op | clean center,rot,op | notebook center,rot,op |
+|---|---|---|---|
+| vinyl card (≈170w) | 1296,200, 2, 1 | 756,184, 0, 1 | 1100,238, 0, 1 |
+| folder (≈150w) | 1196,365, -6, 1 | 1305,655, 0, 1 | 1305,655, 0, **0** |
+| airdrop card (≈188w) | 1205,530, 2, 1 | 1099,654, 0, 1 | 423,588, 0, 1 |
 
-## Center column (centered, top in px)
-- Signature `Jackie Hu` — top 217, font Historia Sky Script 85px / lh 102, #3e3e42
-- `Product Design` — top 331, IBM Plex Mono 16/24, #47443f
-- `Verb & Noun` — top 355, 12/18, #47443f
-- Tagline — top 385, 16/19.2, #47443f, width ~590, centered, 2 lines
-- Three 48px tool icons — top 641, gap 10, centered (#e7e6de active, #fffaf6 others)
-- Scroll chevron — top 825, 32px, #69645e, soft bounce
+## Center text column (signature + Product Design + Verb&Noun + tagline)
+Centered block; per-mode translate of the whole group (chaos baseline: signature top 215):
+- **chaos:** translate(0, 0), centered.
+- **notebook:** translate(0, 0), centered (identical placement; sits on the notebook page).
+- **clean:** shift right + down ≈ `translate(+390px, +95px)`. (Measured: signature center 720→1225,
+  tagline center 720→1072, both +95 in y.) Approximate; QA-nudge.
 
-## Hero height
-Next section (`Currently cooking`) top ≈ 963 @1440. Use hero height ≈ 900.
+Buttons + chevron stay fixed (not animated). Buttons keep their own `-translate-y` hover.
+
+## Implementation notes (verified)
+- `position:absolute` + transitions are applied via Tailwind `absolute` + inline `transition`
+  (custom `.hero-obj` CSS in globals.css did NOT apply under Tailwind v4 — do not rely on it).
+- Hover uses `group` / `group-hover:scale-110`; Tailwind v4 emits this via the CSS `scale:`
+  property (not `transform:`) inside `@media (hover:hover)`. Verified `scale:1.1` on real hover.
+- The centered text overlay MUST be `pointer-events-none`, otherwise its full-stage box
+  intercepts hovers and objects never receive them.
+
+## Known limitations (vs live Framer site)
+- Cards keep a fixed size/orientation (live vinyl flips portrait↔landscape between modes).
+- Wide screens (>1440) center the composition rather than hugging viewport edges (round-2 edge-anchor traded away for clean mode transitions).
