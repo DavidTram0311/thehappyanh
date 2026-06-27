@@ -19,10 +19,10 @@ Palette: ink `#3e3e42`, body `#69645e`, muted `#878686`, pen `#47443f`, card `#f
    three 48px tool-icon buttons, and a bouncing scroll chevron. Right-side UI cluster
    rebuilt as cards: cursor, vinyl player card, blue folder, AirDrop card, Mac toolbar.
 
-2. **Currently cooking** (`CurrentlyCooking.tsx`) — heading + paragraph with an inline
+2. **My USP** (`CurrentlyCooking.tsx`) — heading + paragraph with an inline
    script-font "The Uncle Thing" badge.
 
-3. **Recently Made** (`RecentlyMade.tsx`) — 4 link cards (icon + title + subtitle):
+3. **Recently Work** (`RecentlyMade.tsx`) — 4 link cards (icon + title + subtitle):
    JUST, Drigmo, Zenly, Discover Student Loans. Floating orange "Jackie" chat pill.
 
 4. **Other Work** (`OtherWork.tsx`) — 2×2 grid of cards (thumbnail + title + meta +

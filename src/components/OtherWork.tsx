@@ -49,7 +49,7 @@ export default function OtherWork() {
   return (
     <section className="mx-auto w-full max-w-[1040px] px-6 py-10">
       <div className="mb-6 border-t border-black/10 pt-6">
-        <h2 className="text-[20px] font-medium text-[#3e3e42]">Other Work ⁕</h2>
+        <h2 className="text-[20px] font-medium text-[#3e3e42]">Blogs</h2>
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
