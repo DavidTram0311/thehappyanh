@@ -184,7 +184,7 @@ export default function Hero() {
               className="pointer-events-auto absolute inset-x-0 cursor-default text-center transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-1 hover:scale-[1.03]"
               style={{ top: 215, fontFamily: "var(--font-script)", fontSize: 85, lineHeight: "102px", color: "#3e3e42", fontWeight: 400 }}
             >
-              Anh (Talia) Nguyen
+              Talia Nguyen
             </h1>
             <p className="pointer-events-auto absolute inset-x-0 cursor-default text-center transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-0.5 hover:scale-[1.05]" style={{ top: 331, fontSize: 16, lineHeight: "24px", color: "#47443f" }}>
               Influencer Partnership Specialist
@@ -196,7 +196,8 @@ export default function Hero() {
               className="pointer-events-auto absolute left-1/2 -translate-x-1/2 cursor-default text-center transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-0.5 hover:-translate-x-1/2 hover:scale-[1.02]"
               style={{ top: 385, width: 590, fontSize: 16, lineHeight: "19.2px", color: "#47443f" }}
             >
-              a thoughtful process of crafting experiences that engage people, shape clarity, and spark delights.
+A dynamic young marketer who transforms influencer campaigns into a thoughtful process of crafting experiences shaping clarity for brands and sparking genuine delight for audiences.
+
             </p>
           </div>
 

@@ -22,9 +22,9 @@ const historiaSkyScript = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Anh (Talia) Nguyen — Influencer Partnership Specialist",
+  title: "Talia Nguyen — Influencer Partnership Specialist",
   description:
-    "A thoughtful process of crafting experiences that engage people, shape clarity, and spark delights.",
+    "A dynamic young marketer who transforms influencer campaigns into a thoughtful process of crafting experiences shaping clarity for brands and sparking genuine delight for audiences.",
   icons: {
     icon: "/seo/favicon.png",
     apple: "/seo/apple-icon.png",

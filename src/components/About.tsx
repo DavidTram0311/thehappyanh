@@ -25,7 +25,7 @@ export default function About() {
 
         <p className="mt-8 text-[14px] text-[#8f8d8c]">
           <a
-            href="https://www.linkedin.com/in/jackiehu-design/"
+            href="https://www.linkedin.com/in/tuong-anh-nguyen-song/"
             target="_blank"
             rel="noopener noreferrer"
             className="underline-offset-2 transition-colors hover:text-[#3e3e42] hover:underline"
@@ -34,19 +34,18 @@ export default function About() {
           </a>{" "}
           |{" "}
           <a
-            href="https://x.com/itsjackiehu"
+            href="https://www.linkedin.com/in/tuong-anh-nguyen-song/"
             target="_blank"
             rel="noopener noreferrer"
             className="underline-offset-2 transition-colors hover:text-[#3e3e42] hover:underline"
           >
-            Twitter (x)
           </a>{" "}
-          | E-mail:{" "}
+          E-mail:{" "}
           <a
-            href="mailto:jackiehu.design@gmail.com"
+            href="andreaduongnguyen@gmail.com"
             className="underline-offset-2 transition-colors hover:text-[#3e3e42] hover:underline"
           >
-            jackiehu.design@gmail.com
+            andreaduongnguyen@gmail.com
           </a>
         </p>
       </div>
