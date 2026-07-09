@@ -141,9 +141,6 @@ onMouseEnter={() => setActiveImages(item.hoverImages || null)}
             className="absolute -left-1 -top-2 h-3 w-3 rotate-45 bg-[#ff6a3d]"
             style={{ clipPath: "polygon(0 0, 100% 0, 0 100%)" }}
           />
-          <div className="rounded-full bg-[#ff6a3d] px-5 py-2 text-[15px] font-semibold text-white shadow-md">
-            Anh
-          </div>
         </div>
       </div>
     </section>
