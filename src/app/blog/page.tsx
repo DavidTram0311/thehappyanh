@@ -1,105 +1,165 @@
-"use client";
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
-export default function AllBlogsPage() {
-  const [blogs, setBlogs] = useState<any[]>([]);
+function formatDate(dateString: string) {
+  if (!dateString) return "";
+  const d = new Date(dateString);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
 
-  useEffect(() => {
-    fetch('http://localhost:1337/api/blogs?populate=*&sort=createdAt:desc')
-      .then((res) => res.json())
-      .then((res) => setBlogs(res.data || []))
-      .catch((err) => console.error("Lỗi tải blog:", err));
-  }, []);
+export default async function BlogPage() {
+  let blogs: any[] = [];
 
-  const formatHTML = (html: string) => {
-    if (!html) return "Đang cập nhật nội dung...";
-    let formatted = html.replace(/src="(\/[^"]+)"/g, 'src="http://localhost:1337$1"');
-    formatted = formatted.replace(/<img /g, '<img class="max-h-[160px] w-auto max-w-full object-contain mx-auto my-4 rounded-xl border border-[#e5e7eb]/80 shadow-sm bg-white p-1 block" ');
-    formatted = formatted.replace(/<p\b([^>]*)>/gi, '<div class="ck-p"$1>').replace(/<\/p>/gi, '</div>');
-    return formatted;
-  };
-
-  const col1 = blogs.filter((_, index) => index % 2 === 0);
-  const col2 = blogs.filter((_, index) => index % 2 !== 0);
-
-  const renderBlogCard = (item: any) => {
-    const blog = item.attributes || item;
-    const isHighlight = blog.ISFEATURED === true || blog.isFeatured === true || blog.Isfeatured === true; 
-
-    return (
-      <Link
-        href={`/blog/${blog.Slug || blog.slug}`}
-        key={item.id}
-        className="group block relative overflow-hidden bg-[#fcf7f2] border border-[#e5e7eb] rounded-[20px] p-8 transition-all duration-500 ease-out hover:border-[#3e3e42]/50 hover:-translate-y-1 hover:shadow-[4px_4px_0px_rgba(62,62,66,0.15)] w-full"
-      >
-        <div className="absolute left-0 top-0 w-[3px] h-0 bg-[#3e3e42] transition-all duration-500 ease-out group-hover:h-full z-20"></div>
-
-        {isHighlight && (
-          <div className="mb-5">
-            <span className="inline-flex items-center text-[10px] font-semibold uppercase tracking-widest text-[#69645e] border border-[#e5e7eb] bg-white px-3 py-1.5 rounded-full shadow-sm">
-              ✦ Highlight Blog
-            </span>
-          </div>
-        )}
-
-        {/* Giảm cỡ chữ tiêu đề xuống 18px */}
-        <h2 className="text-[18px] font-bold text-[#3e3e42] group-hover:text-black transition-colors mb-4 leading-snug">
-          {blog.Title}
-        </h2>
-
-        {/* Tăng max-h lên 400px */}
-        <div className="relative max-h-[400px] overflow-hidden">
-          <div 
-            className="text-[#69645e] text-[14px] leading-[1.7] pr-2 
-              [&_.ck-p]:mb-3 [&_.ck-p]:!font-sans [&_span]:!font-sans
-              [&_h1]:text-[16px] [&_h1]:font-bold [&_h1]:text-[#3e3e42] [&_h1]:mb-2 [&_h1]:mt-4 [&_h1]:!font-sans
-              [&_h2]:text-[15px] [&_h2]:font-bold [&_h2]:text-[#3e3e42] [&_h2]:mb-2 [&_h2]:mt-3 [&_h2]:!font-sans
-              [&_h3]:text-[14px] [&_h3]:font-bold [&_h3]:text-[#3e3e42] [&_h3]:mb-2 [&_h3]:mt-3 [&_h3]:!font-sans
-              [&_pre]:bg-[#f3f4f6] [&_pre]:p-3 [&_pre]:rounded-xl [&_pre]:overflow-x-auto [&_pre]:text-[12px] [&_pre]:mb-3 [&_pre_*]:!font-mono
-              [&_code]:bg-[#f3f4f6] [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-[12px] [&_code_*]:!font-mono
-              [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-3 [&_li]:!font-sans
-              [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:mb-3
-            "
-            dangerouslySetInnerHTML={{ __html: formatHTML(blog.Content) }}
-          >
-          </div>
-          <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-[#fcf7f2] via-[#fcf7f2]/90 to-transparent pointer-events-none"></div>
-        </div>
-
-        <div className="mt-5 flex justify-end relative z-10">
-          <span className="text-sm text-[#878686] italic opacity-60 group-hover:opacity-100 transition-opacity flex items-center">
-            continue reading →
-          </span>
-        </div>
-      </Link>
-    );
-  };
+  try {
+    const res = await fetch('http://127.0.0.1:1337/api/blogs?sort=publishedAt:desc&populate=*', { cache: 'no-store' });
+    if (res.ok) {
+      const data = await res.json();
+      blogs = data.data || [];
+    }
+  } catch (error) {}
 
   return (
-    <main className="w-full min-h-screen bg-[#fcf7f2] py-16 md:py-24">
-      <div className="max-w-6xl mx-auto px-6 w-full">
-        
-        <div className="mb-14 border-b border-[#e5e7eb] pb-6">
-          <Link href="/#blogs" className="inline-flex items-center text-sm font-medium text-[#878686] hover:text-[#3e3e42] transition-colors mb-6">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Home
-          </Link>
-          <h1 className="text-4xl md:text-5xl font-bold text-[#3e3e42]">All Blogs</h1>
-        </div>
+    <div className="mx-auto max-w-[1040px] px-6 py-20">
+      
+      {/* 🌟 ĐÃ SỬA LINK THÀNH /#blog ĐỂ TRẢ VỀ ĐÚNG KHU VỰC 🌟 */}
+      <Link href="/#blog" className="group mb-8 inline-flex items-center gap-3 font-mono text-[13px] font-light tracking-wide text-[#878686] transition-colors duration-300 hover:text-[#3e3e42]">
+        <span className="font-sans font-light opacity-60 transition-transform duration-300 group-hover:-translate-x-1">←</span> 
+        Home
+      </Link>
 
-        <div className="flex flex-col md:flex-row gap-8 w-full items-start">
-          <div className="flex flex-col gap-8 w-full md:w-1/2">
-            {col1.map(renderBlogCard)}
+      <h1 className="mb-14 font-mono text-5xl font-bold tracking-tight text-[#3e3e42]">All Blogs</h1>
+      
+      {blogs.length === 0 ? (
+        <p className="font-mono text-[#878686]">No blogs found...</p>
+      ) : (
+        <>
+          {/* GIAO DIỆN ĐIỆN THOẠI */}
+          <div className="flex flex-col gap-10 md:hidden">
+            {blogs.map((blog: any) => {
+               const item = blog.attributes || blog;
+               const { title, slug, content, publishedAt } = item;
+               const authorName = item.author?.data?.attributes?.name || "Nguyễn Bá Phát";
+               
+               return (
+                  <div key={blog.id} className="break-inside-avoid mb-8">
+                    <Link href={`/blog/${slug}`} className="group block h-full">
+                      <div className="relative flex h-full flex-col rounded-2xl border border-[#e8e1d9] border-b-[4px] border-b-[#ded5ca] bg-[#fcf7f2] p-8 transition-all duration-300 shadow-[0_4px_12px_rgba(0,0,0,0.04)] hover:-translate-y-1 hover:border-b-[#d1c6b8] hover:shadow-[0_10px_25px_rgba(0,0,0,0.08)] overflow-hidden">
+                        <h2 className="mb-3 text-2xl font-bold leading-snug text-[#3e3e42]">{title}</h2>
+                        <div className="mb-6 flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-[#878686]">
+                          <span>{authorName}</span>
+                          <span className="h-1 w-1 rounded-full bg-[#878686]/40"></span>
+                          <span>{formatDate(publishedAt)}</span>
+                        </div>
+                        <div className="relative mb-6 overflow-hidden max-h-[550px]">
+                          {/* 🌟 FIX LỖI ĐỊNH DẠNG 🌟 */}
+                          <div 
+                            className="ck-content text-left text-[12.5px] leading-[1.6] text-[#5c5751] break-words
+                              [&_p]:mb-3 [&_strong]:font-bold [&_em]:italic [&_h2]:text-base [&_h3]:text-[14px]
+                              [&_figure]:m-0 [&_figure]:mb-3 [&_img]:w-full [&_img]:h-auto [&_img]:rounded-xl
+                              [&_.image-style-align-left]:float-left [&_.image-style-align-left]:mr-6 [&_.image-style-align-left]:mb-2 [&_.image-style-align-left]:max-w-[50%]
+                              [&_.image-style-side]:float-right [&_.image-style-side]:ml-6 [&_.image-style-side]:mb-2 [&_.image-style-side]:max-w-[50%]
+                              [&_.image-style-align-right]:float-right [&_.image-style-align-right]:ml-6 [&_.image-style-align-right]:mb-2 [&_.image-style-align-right]:max-w-[50%]
+                              [&_.image-style-align-center]:mx-auto [&_.image-style-align-center]:block [&_.image-style-align-center]:max-w-[80%]
+                              after:content-[''] after:table after:clear-both"
+                            dangerouslySetInnerHTML={{ __html: content || "" }} 
+                          />
+                          <div className="absolute bottom-0 left-0 w-full h-36 bg-gradient-to-t from-[#fcf7f2] to-transparent pointer-events-none z-10" />
+                        </div>
+                        <div className="mt-auto text-right relative z-20">
+                          <span className="font-mono text-[13px] italic text-[#878686] transition-colors duration-300 group-hover:text-[#3e3e42]">continue reading →</span>
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+               )
+            })}
           </div>
-          <div className="flex flex-col gap-8 w-full md:w-1/2">
-            {col2.map(renderBlogCard)}
-          </div>
-        </div>
 
-      </div>
-    </main>
+          {/* GIAO DIỆN DESKTOP */}
+          <div className="hidden md:grid grid-cols-2 gap-10 items-start">
+            
+            <div className="flex flex-col gap-10">
+              {blogs.filter((_, i) => i % 2 === 0).map((blog: any) => {
+                const item = blog.attributes || blog;
+                const { title, slug, content, publishedAt } = item;
+                const authorName = item.author?.data?.attributes?.name || "Nguyễn Bá Phát";
+
+                return (
+                  <Link key={blog.id} href={`/blog/${slug}`} className="group block h-full">
+                    <div className="relative flex h-full flex-col rounded-2xl border border-[#e8e1d9] border-b-[4px] border-b-[#ded5ca] bg-[#fcf7f2] p-8 md:p-10 transition-all duration-300 shadow-[0_4px_12px_rgba(0,0,0,0.04)] hover:-translate-y-1 hover:border-b-[#d1c6b8] hover:shadow-[0_10px_25px_rgba(0,0,0,0.08)] overflow-hidden">
+                      <h2 className="mb-3 text-2xl font-bold leading-snug text-[#3e3e42]">{title}</h2>
+                      <div className="mb-6 flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-[#878686]">
+                        <span>{authorName}</span>
+                        <span className="h-1 w-1 rounded-full bg-[#878686]/40"></span>
+                        <span>{formatDate(publishedAt)}</span>
+                      </div>
+                      
+                      <div className="relative mb-6 overflow-hidden max-h-[550px]">
+                        {/* 🌟 FIX LỖI ĐỊNH DẠNG 🌟 */}
+                        <div 
+                          className="ck-content text-left text-[12.5px] leading-[1.6] text-[#5c5751] break-words
+                            [&_p]:mb-3 [&_strong]:font-bold [&_em]:italic [&_h2]:text-base [&_h3]:text-[14px]
+                            [&_figure]:m-0 [&_figure]:mb-3 [&_img]:w-full [&_img]:h-auto [&_img]:rounded-xl
+                            [&_.image-style-align-left]:float-left [&_.image-style-align-left]:mr-6 [&_.image-style-align-left]:mb-2 [&_.image-style-align-left]:max-w-[50%]
+                            [&_.image-style-side]:float-right [&_.image-style-side]:ml-6 [&_.image-style-side]:mb-2 [&_.image-style-side]:max-w-[50%]
+                            [&_.image-style-align-right]:float-right [&_.image-style-align-right]:ml-6 [&_.image-style-align-right]:mb-2 [&_.image-style-align-right]:max-w-[50%]
+                            [&_.image-style-align-center]:mx-auto [&_.image-style-align-center]:block [&_.image-style-align-center]:max-w-[80%]
+                            after:content-[''] after:table after:clear-both"
+                          dangerouslySetInnerHTML={{ __html: content || "" }} 
+                        />
+                        <div className="absolute bottom-0 left-0 w-full h-36 bg-gradient-to-t from-[#fcf7f2] to-transparent pointer-events-none z-10" />
+                      </div>
+                      <div className="mt-auto text-right relative z-20">
+                        <span className="font-mono text-[13px] italic text-[#878686] transition-colors duration-300 group-hover:text-[#3e3e42]">continue reading →</span>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+
+            <div className="flex flex-col gap-10 mt-20">
+              {blogs.filter((_, i) => i % 2 !== 0).map((blog: any) => {
+                const item = blog.attributes || blog;
+                const { title, slug, content, publishedAt } = item;
+                const authorName = item.author?.data?.attributes?.name || "Nguyễn Bá Phát";
+
+                return (
+                  <Link key={blog.id} href={`/blog/${slug}`} className="group block h-full">
+                    <div className="relative flex h-full flex-col rounded-2xl border border-[#e8e1d9] border-b-[4px] border-b-[#ded5ca] bg-[#fcf7f2] p-8 md:p-10 transition-all duration-300 shadow-[0_4px_12px_rgba(0,0,0,0.04)] hover:-translate-y-1 hover:border-b-[#d1c6b8] hover:shadow-[0_10px_25px_rgba(0,0,0,0.08)] overflow-hidden">
+                      <h2 className="mb-3 text-2xl font-bold leading-snug text-[#3e3e42]">{title}</h2>
+                      <div className="mb-6 flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-[#878686]">
+                        <span>{authorName}</span>
+                        <span className="h-1 w-1 rounded-full bg-[#878686]/40"></span>
+                        <span>{formatDate(publishedAt)}</span>
+                      </div>
+                      
+                      <div className="relative mb-6 overflow-hidden max-h-[550px]">
+                        {/* 🌟 FIX LỖI ĐỊNH DẠNG 🌟 */}
+                        <div 
+                          className="ck-content text-left text-[12.5px] leading-[1.6] text-[#5c5751] break-words
+                            [&_p]:mb-3 [&_strong]:font-bold [&_em]:italic [&_h2]:text-base [&_h3]:text-[14px]
+                            [&_figure]:m-0 [&_figure]:mb-3 [&_img]:w-full [&_img]:h-auto [&_img]:rounded-xl
+                            [&_.image-style-align-left]:float-left [&_.image-style-align-left]:mr-6 [&_.image-style-align-left]:mb-2 [&_.image-style-align-left]:max-w-[50%]
+                            [&_.image-style-side]:float-right [&_.image-style-side]:ml-6 [&_.image-style-side]:mb-2 [&_.image-style-side]:max-w-[50%]
+                            [&_.image-style-align-right]:float-right [&_.image-style-align-right]:ml-6 [&_.image-style-align-right]:mb-2 [&_.image-style-align-right]:max-w-[50%]
+                            [&_.image-style-align-center]:mx-auto [&_.image-style-align-center]:block [&_.image-style-align-center]:max-w-[80%]
+                            after:content-[''] after:table after:clear-both"
+                          dangerouslySetInnerHTML={{ __html: content || "" }} 
+                        />
+                        <div className="absolute bottom-0 left-0 w-full h-36 bg-gradient-to-t from-[#fcf7f2] to-transparent pointer-events-none z-10" />
+                      </div>
+                      <div className="mt-auto text-right relative z-20">
+                        <span className="font-mono text-[13px] italic text-[#878686] transition-colors duration-300 group-hover:text-[#3e3e42]">continue reading →</span>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+            
+          </div>
+        </>
+      )}
+    </div>
   );
 }
