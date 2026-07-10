@@ -1,65 +1,88 @@
-"use client";
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import BackButton from '@/components/BackButton';
 
-export default function BlogDetailPage() {
-  const params = useParams();
-  const router = useRouter(); 
-  const slug = params?.slug;
-  const [blog, setBlog] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+function formatDate(dateString: string) {
+  if (!dateString) return "";
+  const d = new Date(dateString);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
 
-  useEffect(() => {
-    if (!slug) return;
-    fetch(`http://localhost:1337/api/blogs?filters[Slug][$eq]=${slug}&populate=*`)
-      .then((res) => res.json())
-      .then((res) => {
-        const data = res.data || [];
-        setBlog(data[0]); 
-        setLoading(false);
-      })
-      .catch((err) => { console.error(err); setLoading(false); });
-  }, [slug]);
+async function getBlogBySlug(slug: string) {
+  try {
+    const res = await fetch(`http://127.0.0.1:1337/api/blogs?filters[slug][$eq]=${slug}&populate=*`, { 
+      cache: 'no-store' 
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data?.data?.[0] || null; 
+  } catch (error) {
+    return null;
+  }
+}
 
-  const formatHTML = (html: string) => {
-    if (!html) return "";
-    let formatted = html.replace(/src="(\/[^"]+)"/g, 'src="http://localhost:1337$1"');
-    formatted = formatted.replace(/<p\b([^>]*)>/gi, '<div class="ck-p"$1>').replace(/<\/p>/gi, '</div>');
-    return formatted;
-  };
+export default async function BlogDetailPage({ params }: { params: any }) {
+  const resolvedParams = await params;
+  const slug = resolvedParams?.slug;
+  
+  if (!slug) {
+    return (
+      <div className="max-w-3xl mx-auto p-8 pt-24 text-center min-h-screen">
+        <h1 className="text-3xl font-bold text-red-500 mb-6">Invalid directory!</h1>
+      </div>
+    );
+  }
 
-  if (loading) return <div className="text-center py-20 text-[#878686] bg-[#fcf7f2] min-h-screen">Loading...</div>;
-  if (!blog) return <div className="text-center py-20 text-[#3e3e42] bg-[#fcf7f2] min-h-screen">Không tìm thấy bài viết.</div>;
+  const blog = await getBlogBySlug(slug);
+  
+  if (!blog) {
+    return (
+      <div className="max-w-3xl mx-auto p-8 pt-24 text-center min-h-screen">
+        <h1 className="text-3xl font-bold text-[#3e3e42] mb-6">Article not found</h1>
+        <BackButton />
+      </div>
+    );
+  }
 
-  const data = blog.attributes || blog;
+  const item = blog.attributes || blog;
+  const { title, content, publishedAt } = item;
+  const authorName = item.author?.data?.attributes?.name || "Nguyễn Bá Phát";
 
   return (
-    <main className="w-full min-h-screen bg-[#fcf7f2] py-20">
-      <article className="max-w-3xl mx-auto px-6">
-        <button onClick={() => router.back()} className="text-sm text-[#878686] hover:text-[#3e3e42] mb-10 transition-colors">
-          ← Back
-        </button>
-        
-        <h1 className="text-3xl md:text-4xl font-bold text-[#3e3e42] mb-10 leading-snug">
-          {data.Title}
-        </h1>
-        
+    <article className="max-w-3xl mx-auto p-8 pt-24 min-h-screen">
+      
+      <BackButton />
+      
+      <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight text-[#3e3e42]">
+        {title}
+      </h1>
+
+      <div className="mb-14 flex items-center gap-3 font-mono text-[12px] uppercase tracking-wider text-[#878686] border-b border-black/[0.05] pb-6">
+        <span>By {authorName}</span>
+        <span className="h-1 w-1 rounded-full bg-[#878686]/40"></span>
+        <span>{formatDate(publishedAt)}</span>
+      </div>
+
+      <div className="w-full relative">
+        {/* 🌟 ÉP CHUẨN ĐỊNH DẠNG: text-left, THÊM mr-8, ml-8 CHO ẢNH FLOAT 🌟 */}
         <div 
-          className="text-[16px] leading-[1.8] text-[#69645e] 
-            [&_.ck-p]:mb-6 [&_.ck-p]:!font-sans
-            [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-[#3e3e42] [&_h2]:mt-10 [&_h2]:mb-4 [&_h2]:!font-sans
-            [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-[#3e3e42] [&_h3]:mt-8 [&_h3]:mb-3 [&_h3]:!font-sans
-            [&_pre]:bg-[#f3f4f6] [&_pre]:p-4 [&_pre]:rounded-lg [&_pre]:overflow-x-auto [&_pre]:text-[14px] [&_pre]:mb-6 [&_pre_*]:!font-mono
-            [&_code]:bg-[#f3f4f6] [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-[14px] [&_code_*]:!font-mono
-            [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-6
-            [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-6
-            [&_figure]:!w-full [&_figure]:!flex [&_figure]:!flex-col [&_figure]:!items-center [&_figure]:!my-10 [&_figure]:!m-0
-            [&_figcaption]:!text-sm [&_figcaption]:!text-[#878686] [&_figcaption]:!mt-3 [&_figcaption]:!italic [&_figcaption]:!text-center
-            [&_img]:!mx-auto [&_img]:!block [&_img]:max-w-full [&_img]:h-auto [&_img]:rounded-xl [&_img]:shadow-md [&_img]:border [&_img]:border-[#e5e7eb]"
-          dangerouslySetInnerHTML={{ __html: formatHTML(data.Content) }}
-        >
-        </div>
-      </article>
-    </main>
+          className="ck-content text-left text-[15.5px] leading-[1.8] text-[#5c5751] break-words
+            /* Text & Lists */
+            [&_p]:mb-5 [&_strong]:font-bold [&_em]:italic
+            [&_ul]:list-disc [&_ul]:ml-6 [&_ul]:mb-5 [&_ol]:list-decimal [&_ol]:ml-6 [&_ol]:mb-5
+            /* Headings */
+            [&_h2]:text-3xl [&_h2]:font-bold [&_h2]:mb-4 [&_h2]:mt-10 [&_h2]:text-[#3e3e42]
+            [&_h3]:text-2xl [&_h3]:font-bold [&_h3]:mb-4 [&_h3]:mt-8 [&_h3]:text-[#3e3e42]
+            /* Hình ảnh & Float theo Strapi */
+            [&_figure]:m-0 [&_figure]:mb-6 [&_img]:w-full [&_img]:h-auto [&_img]:rounded-2xl [&_img]:shadow-md
+            [&_.image-style-align-left]:float-left [&_.image-style-align-left]:mr-8 [&_.image-style-align-left]:mb-4 [&_.image-style-align-left]:max-w-[50%]
+            [&_.image-style-side]:float-right [&_.image-style-side]:ml-8 [&_.image-style-side]:mb-4 [&_.image-style-side]:max-w-[50%]
+            [&_.image-style-align-right]:float-right [&_.image-style-align-right]:ml-8 [&_.image-style-align-right]:mb-4 [&_.image-style-align-right]:max-w-[50%]
+            [&_.image-style-align-center]:mx-auto [&_.image-style-align-center]:block [&_.image-style-align-center]:max-w-[85%]
+            /* Xóa Float cuối bài tránh tràn khối */
+            after:content-[''] after:table after:clear-both"
+          dangerouslySetInnerHTML={{ __html: content || "<p>No content available.</p>" }}
+        />
+      </div>
+      
+    </article>
   );
 }

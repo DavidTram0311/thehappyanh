@@ -137,10 +137,6 @@ onMouseEnter={() => setActiveImages(item.hoverImages || null)}
       {/* Floating Jackie chat pill */}
       <div className="pointer-events-none absolute right-[40px] top-[150px] hidden lg:block">
         <div className="relative">
-          <div
-            className="absolute -left-1 -top-2 h-3 w-3 rotate-45 bg-[#ff6a3d]"
-            style={{ clipPath: "polygon(0 0, 100% 0, 0 100%)" }}
-          />
         </div>
       </div>
     </section>
