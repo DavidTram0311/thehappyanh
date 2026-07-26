@@ -1,88 +1,112 @@
-type Work = {
-  title: string;
-  meta: string;
-  desc: string;
-  thumb: string;
-  href?: string;
-};
+import Link from 'next/link';
+import { Nunito } from 'next/font/google';
 
-const WORKS: Work[] = [
-  {
-    title: "Alora",
-    meta: "Chrome extension | 2020",
-    desc: "Personal data management and data tracking transparency.",
-    thumb: "/images/iB6uzsB6l2paDhNKJwSzJyvDSzw.png",
-    href: "https://chromewebstore.google.com/detail/pcmafklmeafeodgkklcoidiledfeicha?utm_source=item-share-cb",
-  },
-  {
-    title: "NBA Fan Zone",
-    meta: "AKQA Summer Internship | 2017",
-    desc: "The official loyalty HUB of the NBA for China’s fans.",
-    thumb: "/images/xleyZ28tx2lxtCNCKRFTGYdUqTI.png",
-  },
-  {
-    title: "100 Days of UI",
-    meta: "User Interface | 2020",
-    desc: "Daily Design Challenge on Dribbble",
-    thumb: "/images/mqKjnAfYlJoPjLE80JkaFFBYGyE.png",
-    href: "https://dribbble.com/jackiehu_",
-  },
-  {
-    title: "Oddio",
-    meta: "Project @ CMU MHCI | 2020",
-    desc: "A new audio-based social network with an endless feed",
-    thumb: "/images/NhreDx8SlTfulVIsJ34VmaolzQ.png",
-    href: "https://drive.google.com/file/d/1brEwbnox8v0qfgKTK1wfy83NFziLbp4T/view?usp=sharing",
-  },
-];
+const PUBLIC_IMAGE_URL = "http://192.168.1.9:1337"; 
+const API_URL = "http://127.0.0.1:1337"; 
 
-function LinkGlyph() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1.5 1.5" />
-      <path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1.5-1.5" />
-    </svg>
-  );
+/* Initialize Nunito Font */
+const nunito = Nunito({ 
+  weight: ['400', '500', '600', '700', '800'],
+  subsets: ['latin', 'vietnamese'],
+  display: 'swap',
+});
+
+function formatDate(dateString: string) {
+  if (!dateString) return "";
+  const d = new Date(dateString);
+  return d.toLocaleDateString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-export default function OtherWork() {
+function fixImageUrls(htmlContent: string) {
+  if (!htmlContent) return "";
+  return htmlContent.replace(/(https?:\/\/[^\/]+)?\/uploads\//g, `${PUBLIC_IMAGE_URL}/uploads/`);
+}
+
+export default async function OtherWork() {
+  let blogs: any[] = [];
+  
+  try {
+    const res = await fetch(`${API_URL}/api/blogs?filters[highlight][$eq]=true&sort=publishedAt:desc&populate=*`, { cache: 'no-store' });
+    if (res.ok) {
+      const data = await res.json();
+      blogs = data.data || [];
+    }
+  } catch (error) {}
+
   return (
-    <section className="mx-auto w-full max-w-[1040px] px-6 py-10">
+    <section id="blog" className="mx-auto w-full max-w-[1040px] px-6 py-10 overflow-hidden font-sans">
       <div className="mb-6 border-t border-black/10 pt-6">
-        <h2 className="text-[20px] font-medium text-[#3e3e42]">Blogs</h2>
+        <Link href="/blog" className="inline-block hover:opacity-70 transition-opacity">
+          <h2 className="text-[20px] font-medium text-[#3e3e42] hover:underline cursor-pointer font-sans">Blogs</h2>
+        </Link>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        {WORKS.map((w) => {
-          const Card = (
-            <div className="group flex h-full gap-5 rounded-2xl border border-black/[0.04] bg-[#fcf7f2] p-5 transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)]">
-              <div className="h-[135px] w-[115px] shrink-0 overflow-hidden rounded-xl bg-black/5">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={w.thumb}
-                  alt={w.title}
-                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-              </div>
-              <div className="flex flex-col">
-                <h3 className="text-[18px] font-semibold tracking-[-0.36px] text-[#69645e]">{w.title}</h3>
-                <p className="mt-0.5 text-[12px] text-[#878686]">{w.meta}</p>
-                <p className="mt-3 text-[16px] leading-snug text-[#69645e]">{w.desc}</p>
-                <div className="mt-auto pt-3 text-[#878686]">
-                  <LinkGlyph />
+      {blogs.length === 0 ? (
+        <div className="text-gray-400 text-sm italic font-sans">Waiting for updates...</div>
+      ) : (
+        <div className="max-h-[550px] overflow-y-auto pr-2 pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {blogs.map((blog: any, index: number) => {
+              const item = blog.attributes || blog;
+              const { title, slug, content, publishedAt } = item;
+
+              let coverUrl = null;
+              const coverData = item.cover?.data?.attributes || item.thumbnail?.data?.attributes || item.image?.data?.attributes;
+              
+              if (coverData?.url) coverUrl = coverData.url;
+              else if (item.cover?.url) coverUrl = item.cover.url;
+
+              if (coverUrl && !coverUrl.startsWith("http")) coverUrl = `${PUBLIC_IMAGE_URL}${coverUrl}`;
+
+              return (
+                <div key={blog.id || index} className="group w-full block relative cursor-pointer">
+                  {/* Fixed Card Height */}
+                  <div className="relative flex flex-row items-center h-[240px] rounded-[24px] border border-[#e8e1d9] border-b-[4px] border-b-[#ded5ca] bg-[#fcf7f2] p-5 sm:p-6 transition-all duration-300 shadow-[0_4px_10px_rgba(0,0,0,0.03)] group-hover:-translate-y-1 group-hover:border-b-[#d1c6b8] overflow-hidden gap-5 sm:gap-6">
+                    
+                    <Link href={`/blog/${slug}?from=home`} className="absolute inset-0 z-20" aria-label={title}></Link>
+                    
+                    {/* Fixed Square Cover Image */}
+                    <div className="shrink-0 w-[120px] h-[120px] sm:w-[160px] sm:h-[160px] rounded-[16px] overflow-hidden shadow-sm border border-black/5 relative z-10 pointer-events-none flex items-center justify-center bg-[#f0ebe1]">
+                      {coverUrl ? (
+                        <img src={coverUrl} alt={title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                      ) : (
+                        <span className="text-[#a39e93] text-[10px] font-bold tracking-widest uppercase font-sans">No Cover</span>
+                      )}
+                    </div>
+                    
+                    <div className="relative z-10 pointer-events-none flex flex-col flex-1 h-full justify-center min-w-0 py-1">
+                      <h3 className="mb-2 text-[17px] sm:text-[19px] font-bold leading-snug text-[#3e3e42] font-sans">
+                        {title || "Untitled"}
+                      </h3>
+                      
+                      <div className="mb-3 flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-[#878686] font-sans">
+                        <span className="shrink-0" suppressHydrationWarning>{formatDate(publishedAt)}</span>
+                      </div>
+                      
+                      <div className="relative overflow-hidden w-full flex-1 min-h-0">
+                        {/* Apply Nunito to blog body, inherit font for headings */}
+                        <div 
+                          suppressHydrationWarning
+                          className={`ck-content ${nunito.className} text-left text-[#5c5751] w-full break-words [overflow-wrap:anywhere]
+                            [&_p]:!text-[13px] [&_p]:!leading-[1.6] [&_p]:!mb-2
+                            [&_h1]:!hidden [&_h2]:!hidden [&_h3]:!hidden [&_h4]:!hidden [&_h5]:!hidden [&_h6]:!hidden
+                            [&_img]:!max-w-full [&_img]:!h-auto [&_img]:!rounded-md [&_img]:!my-1`}
+                          dangerouslySetInnerHTML={{ __html: fixImageUrls(content) || "" }} 
+                        />
+                        <div className="absolute bottom-0 left-0 w-full h-10 bg-gradient-to-t from-[#fcf7f2] to-transparent" />
+                      </div>
+                      
+                      <div className="mt-2 text-right shrink-0">
+                        <span className="text-[11px] font-medium italic text-[#878686] transition-colors duration-300 group-hover:text-[#3e3e42] font-sans">continue reading →</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          );
-          return w.href ? (
-            <a key={w.title} href={w.href} target="_blank" rel="noopener noreferrer">
-              {Card}
-            </a>
-          ) : (
-            <div key={w.title}>{Card}</div>
-          );
-        })}
-      </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </section>
   );
 }

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, JetBrains_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
@@ -29,6 +29,13 @@ export const metadata: Metadata = {
     icon: "/seo/favicon.png",
     apple: "/seo/apple-icon.png",
   },
+};
+
+// NOTE: Essential viewport configuration for mobile responsiveness
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1, // Prevents auto-zooming that breaks the layout on mobile devices
 };
 
 export default function RootLayout({

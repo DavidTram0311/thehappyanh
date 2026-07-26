@@ -155,3 +155,137 @@
 .animate-bounce-soft {
   animation: bounce-soft 1.8s ease-in-out infinite;
 }
+
+/* ========================================================================= */
+/* --- NATIVE CKEDITOR 5 STYLES (MATCHES STRAPI ADMIN) --- */
+/* ========================================================================= */
+
+.ck-content {
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+  color: var(--color-ink);
+  line-height: 1.8;
+  font-size: 17px;
+  word-wrap: break-word;
+}
+
+/* --- 1. TYPOGRAPHY --- */
+.ck-content p { margin-bottom: 1.5em !important; }
+.ck-content h1, .ck-content h2, .ck-content h3, .ck-content h4, .ck-content h5, .ck-content h6 {
+  color: var(--color-ink) !important;
+  font-weight: 700 !important;
+  margin-top: 2em !important;
+  margin-bottom: 1em !important;
+  line-height: 1.3 !important;
+}
+.ck-content h1 { font-size: 2.25em !important; }
+.ck-content h2 { font-size: 1.8em !important; }
+.ck-content h3 { font-size: 1.5em !important; }
+.ck-content h4 { font-size: 1.25em !important; }
+
+/* --- 2. TEXT FORMATTING --- */
+.ck-content strong { font-weight: 700 !important; }
+.ck-content i, .ck-content em { font-style: italic !important; }
+.ck-content u { text-decoration: underline !important; }
+.ck-content s { text-decoration: line-through !important; }
+/* CKEditor Highlight */
+.ck-content mark {
+  background-color: #fce77a !important; 
+  color: black !important;
+  padding: 0.1em 0.3em !important;
+  border-radius: 4px;
+}
+.ck-content blockquote {
+  border-left: 4px solid var(--color-muted2) !important;
+  padding: 10px 20px !important;
+  margin: 1.5em 0 !important;
+  background-color: var(--color-card) !important;
+  font-style: italic !important;
+}
+
+/* --- 3. LISTS --- */
+.ck-content ul { list-style-type: disc !important; margin: 0 0 1.5em 2em !important; padding: 0 !important; }
+.ck-content ol { list-style-type: decimal !important; margin: 0 0 1.5em 2em !important; padding: 0 !important; }
+.ck-content li { display: list-item !important; margin-bottom: 0.4em !important; }
+.ck-content ul ul, .ck-content ol ul { list-style-type: circle !important; margin-bottom: 0 !important; }
+
+/* --- 4. IMAGES (PREVENT LAYOUT BREAKS) --- */
+
+/* Default image figure state */
+.ck-content figure.image {
+  display: table !important;
+  clear: both !important;
+  text-align: center !important;
+  margin: 1.5em auto !important;
+  min-width: 50px !important;
+}
+.ck-content figure.image img {
+  display: block !important;
+  margin: 0 auto !important;
+  max-width: 100% !important;
+  min-width: 100% !important; /* Force fill figure */
+  height: auto !important;
+  border-radius: var(--radius-lg);
+}
+.ck-content figure.image figcaption {
+  display: table-caption !important;
+  caption-side: bottom !important;
+  word-break: break-word !important;
+  color: var(--color-muted2) !important;
+  background: var(--color-card) !important;
+  padding: 0.6em !important;
+  font-size: 0.85em !important;
+  outline-offset: -1px !important;
+}
+
+/* Handle manually resized images */
+.ck-content figure.image.image_resized {
+  display: block !important;
+  box-sizing: border-box !important;
+}
+.ck-content figure.image.image_resized img {
+  width: 100% !important;
+}
+.ck-content figure.image.image_resized figcaption {
+  display: block !important;
+}
+
+/* Handle left-aligned images */
+.ck-content figure.image-style-align-left,
+.ck-content figure.image-style-side {
+  float: left !important;
+  clear: none !important;
+  margin: 0.5em 2em 1em 0 !important;
+}
+
+/* Handle right-aligned images */
+.ck-content figure.image-style-align-right {
+  float: right !important;
+  clear: none !important;
+  margin: 0.5em 0 1em 2em !important;
+}
+
+/* Cap width at 50% for aligned images without manual resize */
+.ck-content figure.image-style-align-left:not(.image_resized),
+.ck-content figure.image-style-align-right:not(.image_resized),
+.ck-content figure.image-style-side:not(.image_resized) {
+  max-width: 50% !important;
+}
+
+/* --- 5. CLEARFIX --- */
+.ck-content::after {
+  content: "";
+  display: table !important;
+  clear: both !important;
+}
+
+/* --- 6. MOBILE RESPONSIVE --- */
+@media (max-width: 768px) {
+  .ck-content figure.image-style-align-left,
+  .ck-content figure.image-style-align-right,
+  .ck-content figure.image-style-side {
+    float: none !important;
+    margin: 1.5em auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
