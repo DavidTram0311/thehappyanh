@@ -42,7 +42,6 @@ export default function About() {
           </a>{" "}
           E-mail:{" "}
           <a
-            href="andreaduongnguyen@gmail.com"
             className="underline-offset-2 transition-colors hover:text-[#3e3e42] hover:underline"
           >
             andreaduongnguyen@gmail.com

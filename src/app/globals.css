@@ -157,7 +157,7 @@
 }
 
 /* ========================================================================= */
-/* --- BỘ CSS CHUẨN GỐC CỦA CKEDITOR 5 (ĐẢM BẢO 100% GIỐNG STRAPI ADMIN) --- */
+/* --- NATIVE CKEDITOR 5 STYLES (MATCHES STRAPI ADMIN) --- */
 /* ========================================================================= */
 
 .ck-content {
@@ -168,7 +168,7 @@
   word-wrap: break-word;
 }
 
-/* --- 1. CHỮ, ĐOẠN VĂN & TIÊU ĐỀ --- */
+/* --- 1. TYPOGRAPHY --- */
 .ck-content p { margin-bottom: 1.5em !important; }
 .ck-content h1, .ck-content h2, .ck-content h3, .ck-content h4, .ck-content h5, .ck-content h6 {
   color: var(--color-ink) !important;
@@ -182,12 +182,12 @@
 .ck-content h3 { font-size: 1.5em !important; }
 .ck-content h4 { font-size: 1.25em !important; }
 
-/* --- 2. FORMATTING TEXT (Bôi màu, in đậm, gạch ngang...) --- */
+/* --- 2. TEXT FORMATTING --- */
 .ck-content strong { font-weight: 700 !important; }
 .ck-content i, .ck-content em { font-style: italic !important; }
 .ck-content u { text-decoration: underline !important; }
 .ck-content s { text-decoration: line-through !important; }
-/* Bôi màu nền (Highlight) của CKEditor */
+/* CKEditor Highlight */
 .ck-content mark {
   background-color: #fce77a !important; 
   color: black !important;
@@ -202,15 +202,15 @@
   font-style: italic !important;
 }
 
-/* --- 3. DANH SÁCH (Lists) --- */
+/* --- 3. LISTS --- */
 .ck-content ul { list-style-type: disc !important; margin: 0 0 1.5em 2em !important; padding: 0 !important; }
 .ck-content ol { list-style-type: decimal !important; margin: 0 0 1.5em 2em !important; padding: 0 !important; }
 .ck-content li { display: list-item !important; margin-bottom: 0.4em !important; }
 .ck-content ul ul, .ck-content ol ul { list-style-type: circle !important; margin-bottom: 0 !important; }
 
-/* --- 4. HÌNH ẢNH (IMAGES) - CHỐNG VỠ GIAO DIỆN MỌI TRƯỜNG HỢP --- */
+/* --- 4. IMAGES (PREVENT LAYOUT BREAKS) --- */
 
-/* Trạng thái gốc của khung ảnh (Tôn trọng CKEditor) */
+/* Default image figure state */
 .ck-content figure.image {
   display: table !important;
   clear: both !important;
@@ -222,7 +222,7 @@
   display: block !important;
   margin: 0 auto !important;
   max-width: 100% !important;
-  min-width: 100% !important; /* Quan trọng để ảnh fill đầy figure */
+  min-width: 100% !important; /* Force fill figure */
   height: auto !important;
   border-radius: var(--radius-lg);
 }
@@ -237,7 +237,7 @@
   outline-offset: -1px !important;
 }
 
-/* Xử lý khi khách hàng "Kéo chuột" để thu nhỏ ảnh (Resize) */
+/* Handle manually resized images */
 .ck-content figure.image.image_resized {
   display: block !important;
   box-sizing: border-box !important;
@@ -249,7 +249,7 @@
   display: block !important;
 }
 
-/* Xử lý khi khách hàng Bấm canh TTRÁI (Chữ bao bên PHẢI) */
+/* Handle left-aligned images */
 .ck-content figure.image-style-align-left,
 .ck-content figure.image-style-side {
   float: left !important;
@@ -257,28 +257,28 @@
   margin: 0.5em 2em 1em 0 !important;
 }
 
-/* Xử lý khi khách hàng Bấm canh PHẢI (Chữ bao bên TRÁI) */
+/* Handle right-aligned images */
 .ck-content figure.image-style-align-right {
   float: right !important;
   clear: none !important;
   margin: 0.5em 0 1em 2em !important;
 }
 
-/* Nếu khách hàng canh trái/phải nhưng QUÊN không thu nhỏ ảnh, ép nó max 50% để chữ có chỗ chui vào */
+/* Cap width at 50% for aligned images without manual resize */
 .ck-content figure.image-style-align-left:not(.image_resized),
 .ck-content figure.image-style-align-right:not(.image_resized),
 .ck-content figure.image-style-side:not(.image_resized) {
   max-width: 50% !important;
 }
 
-/* --- 5. BẢO HIỂM CHỐNG TRÀN LAYOUT --- */
+/* --- 5. CLEARFIX --- */
 .ck-content::after {
   content: "";
   display: table !important;
   clear: both !important;
 }
 
-/* --- 6. MOBILE RESPONSIVE (Màn hình nhỏ thì xóa Float, ảnh chui ra giữa) --- */
+/* --- 6. MOBILE RESPONSIVE --- */
 @media (max-width: 768px) {
   .ck-content figure.image-style-align-left,
   .ck-content figure.image-style-align-right,

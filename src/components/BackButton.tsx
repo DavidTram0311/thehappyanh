@@ -8,13 +8,13 @@ function BackButtonContent() {
   const searchParams = useSearchParams();
   const from = searchParams.get('from');
 
-  // Thuật toán định tuyến thông minh: Kiểm tra thẻ trên URL để xác định đường về
-  let targetUrl = '/blog'; // Mặc định an toàn: Nếu khách có share link bài viết cho người khác, khi bấm back sẽ ra trang All Blogs.
+  // Route based on URL params
+  let targetUrl = '/blog'; // Default fallback
   
   if (from === 'home') {
-    targetUrl = '/#blog'; // Về thẳng khu vực Highlight ở Trang chủ
+    targetUrl = '/#blog'; // Back to Home section
   } else if (from === 'all') {
-    targetUrl = '/blog';  // Về trang danh sách All Blogs
+    targetUrl = '/blog';  // Back to All Blogs
   }
 
   return (
