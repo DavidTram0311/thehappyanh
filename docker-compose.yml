@@ -1,0 +1,17 @@
+
+services:
+  backend:
+    build: ./backend
+    container_name: happyanh-strapi
+    ports:
+      - "1337:1337"
+    restart: always
+
+  frontend:
+    build: .
+    container_name: happyanh-nextjs
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: always
